@@ -1,6 +1,7 @@
 const joi = require("joi");
 const mongoose = require("mongoose");
-const institutions = require("../models/institution-models");
+const institutions = require("../../models/institution-models");
+const locations = require("../../models/location-models");
 // const institutions = [
 //   {
 //     id: "6937698d875da3818f908883",
@@ -104,6 +105,14 @@ const instituteData = (payload) => {
     contactPhone: joi.string().required().max(11),
     contactEmail: joi.string(),
     yearEstablished: joi.string(),
+    state: joi.string(),
+    location: joi
+      .object({
+        lga: joi.string(),
+        city: joi.string(),
+        address: joi.string(),
+      })
+      .required(),
     leaderId: joi.string(),
   });
 
@@ -111,6 +120,7 @@ const instituteData = (payload) => {
   return { error, value };
 };
 const addInstitute = async (req, res) => {
+  const authorId = req.authorId;
   const { error, value } = instituteData(req.body);
   if (error) {
     console.log(error);
@@ -120,16 +130,22 @@ const addInstitute = async (req, res) => {
       data: null,
     });
   }
-  const { institutionName, institutionType } = req.body;
-  if (!institutionName) {
+  const { location } = req.body;
+  if (!location) {
     return res.status(400).json({
-      message: "InstitutionName not found, please input correctly",
+      message: "location not found, please input correctly",
     });
   }
   const newInstitute = new institutions({
     ...value,
+    authorId,
   });
   await newInstitute.save();
+  const addlocation = new locations({
+    ...location,
+    instituteId: newInstitute._id,
+  });
+  await addlocation.save();
 
   return res.status(201).json({
     message: "institution added succesfully",

@@ -18,7 +18,21 @@ const instituteSchema = new Schema(
   },
   {
     timestamps: true,
+    collection: "institutes",
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
+instituteSchema.virtual("location", {
+  ref: "location",
+  localField: "_id",
+  foreignField: "instituteId",
+});
+instituteSchema.virtual("review", {
+  ref: "review",
+  localField: "_id",
+  foreignField: "instituteId",
+});
+
 const institute = mongoose.model("institute", instituteSchema);
 module.exports = institute;

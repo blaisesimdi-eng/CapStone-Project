@@ -1,10 +1,16 @@
-const leaders = require("../models/leaders-models");
+const leaders = require("../../models/leaders-models");
 
 const getLeader = async (req, res) => {
   const id = req.params.id;
-  let uni = await leaders.findById(id).sort().lean().exec();
-  console.log("This are your uni");
-
+  let uni = await leaders
+    .findById(id)
+    .populate({
+      path: "institute",
+      select: "institutionName institutionType",
+    })
+    .lean()
+    .exec();
+  console.log("This is your leader");
   if (!uni) {
     return res.status(404).json({
       status: res.statusCode,

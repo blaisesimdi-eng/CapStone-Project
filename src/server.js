@@ -3,6 +3,7 @@ const http = require("http");
 const express = require("express");
 const institutionRoute = require("./routes/institution-routes.js");
 const leadersRoute = require("./routes/leaders-routes.js");
+const userRoute = require("./routes/users-routes.js");
 const app = express();
 const logger = require("./middleware/logger.js");
 const connectDb = require("./config/helper.js");
@@ -106,6 +107,7 @@ app.use(express.json());
 app.use(logger);
 app.use("/", institutionRoute);
 app.use("/", leadersRoute);
+app.use("/", userRoute);
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to Capstone Project:)",

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Types } = require("mongoose");
 const institutions = require("../models/institution-models");
 // const institutions = [
 //   {
@@ -95,7 +96,15 @@ const institutions = require("../models/institution-models");
 // ];
 
 const getInstitutes = async (req, res) => {
-  let uni = await institutions.find().sort().lean().exec();
+  const authorId = req.authorId;
+  let uni = await institutions
+    .find({
+      authorId: new Types.ObjectId(authorId),
+    })
+    .sort({ createdAt: -1 })
+    .lean()
+    .exec();
+  //let uni = await institutions.find().sort().lean().exec();
   console.log("This is your uni");
 
   if (req.query.institutionName) {
@@ -116,12 +125,27 @@ const getInstitutes = async (req, res) => {
 };
 
 const getOneInstitute = async (req, res) => {
+  const authorId = req.authorId;
   const id = req.params.id;
-
-  const institute = await institutions.findById(id).populate("leaderId").lean();
+  const institute = await institutions
+    .findOne({
+      authorId: new Types.ObjectId(id),
+    })
+    .populate([
+      {
+        path: "leaderId",
+        select: "firstName lastName",
+      },
+      {
+        path: "location",
+        select: "state city lga address",
+      },
+    ])
+    .lean();
+  //const validLeader = await institutions.findById(id);
   if (!institute) {
-    return res.status(400).json({
-      params: id,
+    return res.status(403).json({
+      message: "Not a valid Id, you are not authorized to acess this route",
       status: res.statusCode,
       data: null,
     });

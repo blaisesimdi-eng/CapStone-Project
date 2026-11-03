@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 function checkId(req, res, next) {
-  const id = mongoose.isValidObjectId(req.params.id);
-  if (!id) {
+  const id = req.params.id;
+  const isValidId = mongoose.isValidObjectId(id);
+  if (!isValidId) {
     return res.status(400).json({
       params: id,
       status: res.statusCode,

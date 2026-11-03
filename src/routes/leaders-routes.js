@@ -1,6 +1,10 @@
 const express = require("express");
-const addLeaders = require("../controller/add-leaders");
-const getLeader = require("../controller/get-leaders");
+const {
+  registerLeaders,
+  loginLeaders,
+} = require("../controller/leaders/register-leaders");
+const getLeader = require("../controller/leaders/get-leaders");
+const authorizeRole = require("../middleware/role-acess");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -8,6 +12,11 @@ router.get("/", (req, res) => {
     message: "Welcome to leaders route",
   });
 });
-router.post("/addleader", addLeaders);
-router.get("/getLeader/:id", getLeader);
+router.post("/register", authorizeRole("admin"), registerLeaders);
+router.post("/login", loginLeaders);
+router.get(
+  "/getLeader/:id",
+  authorizeRole("admin", "manager", "user"),
+  getLeader,
+);
 module.exports = router;
