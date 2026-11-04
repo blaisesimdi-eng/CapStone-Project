@@ -20,7 +20,6 @@ function authtenticate(req, res, next) {
       message: "Invalid or expired token",
     });
   }
-  console.log({ token });
 }
 
 module.exports = authtenticate;

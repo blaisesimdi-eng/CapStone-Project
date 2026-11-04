@@ -108,6 +108,7 @@ const instituteData = (payload) => {
     state: joi.string(),
     location: joi
       .object({
+        state: joi.string(),
         lga: joi.string(),
         city: joi.string(),
         address: joi.string(),

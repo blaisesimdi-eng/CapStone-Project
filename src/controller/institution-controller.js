@@ -96,26 +96,38 @@ const institutions = require("../models/institution-models");
 // ];
 
 const getInstitutes = async (req, res) => {
-  const authorId = req.authorId;
-  let uni = await institutions
-    .find({
-      authorId: new Types.ObjectId(authorId),
-    })
-    .sort({ createdAt: -1 })
-    .lean()
-    .exec();
-  //let uni = await institutions.find().sort().lean().exec();
+  const { page, limit } = req.query;
+  const { authorId, role } = req;
+  const id = req.params.id;
+  const parsedPage = parseInt(page);
+  const parsedLimit = parseInt(limit);
+  const skip = (parsedPage - 1) * parsedLimit;
+  console.log(skip);
+  console.log(parsedLimit, parsedPage, role);
+  let uni;
+  if (role) {
+    uni = await institutions
+      .find({})
+      .populate({
+        path: "location",
+        select: "state city lga address",
+      })
+      .populate("review")
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+  }
   console.log("This is your uni");
 
   if (req.query.institutionName) {
-    const institute = String(req.query.institute);
-    const query = `$regex:institute, $options:"i"`;
+    const institutionName = String(req.query.institutionName);
+    const query = { $regex: institutionName, $options: "i" };
 
-    const uniName = String(req.institutionName).toLowerCase();
-    uni = await institutions.find({ institute: query });
-    // uni = uni.filter((insti) =>
-    //   insti.institutionName.toLowerCase().includes(uniName),
-    // );
+    //const u\niName = String(req.institutionName).toLowerCase();
+    uni = await institutions.find({ institutionName: query }).populate({
+      path: "location",
+      select: "state city lga address",
+    });
   }
 
   return res.status(200).json({
@@ -125,11 +137,12 @@ const getInstitutes = async (req, res) => {
 };
 
 const getOneInstitute = async (req, res) => {
-  const authorId = req.authorId;
   const id = req.params.id;
   const institute = await institutions
     .findOne({
-      authorId: new Types.ObjectId(id),
+      _id: new Types.ObjectId(id),
+
+      // authorId: new Types.ObjectId(authorId),
     })
     .populate([
       {
@@ -156,11 +169,12 @@ const getOneInstitute = async (req, res) => {
   });
 };
 
-const replaceInstitute = async (req, res) => {
+const updateInstitute = async (req, res) => {
   const id = req.params.id;
   const { institutionName, institutionType, owner, programs, yearEstablished } =
     req.body;
-  console.log("Institution Replaced");
+  console.log("Institution updated");
+  delete req.body._id;
   const institute = await institutions.findByIdAndUpdate(id, req.body, {
     runValidators: true,
     new: true,
@@ -195,12 +209,12 @@ const replaceInstitute = async (req, res) => {
 
   return res.status(200).json({
     status: res.statusCode,
-    message: "Institution replace sucessful",
+    message: "Institution update sucessful",
     data: institute,
   });
 };
 
-const updateInstitute = async (req, res) => {
+const replaceInstitute = async (req, res) => {
   const id = req.params.id;
   const { owner, programs, contactEmail, contactPhone } = req.body;
   console.log("Replaced done sucessfully");
@@ -217,7 +231,7 @@ const updateInstitute = async (req, res) => {
   // if (contactPhone) uni.contactPhone = contactPhone;
 
   return res.status(200).json({
-    message: " Update done sucessfully",
+    message: " Replace done sucessfully",
     data: uni,
   });
 };

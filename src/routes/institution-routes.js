@@ -16,14 +16,14 @@ const router = express.Router();
 router.get(
   "/institution",
   authtenticate,
-  authorizeRole("admin", "manager", "users"),
+  authorizeRole("admin", "manager", "user"),
   getInstitutes,
 );
 router.get(
   "/institution/:id",
   checkId,
   authtenticate,
-  authorizeRole("admin", "manager", "users"),
+  authorizeRole("admin", "manager", "user"),
 
   getOneInstitute,
 );
@@ -32,6 +32,12 @@ router.post(
   authtenticate,
   authorizeRole("admin"),
   addInstitute,
+);
+router.post(
+  "/reviewinstitution/:id",
+  authtenticate,
+  authorizeRole("admin", "manager", "user"),
+  reviews,
 );
 router.patch(
   "/replaceinstitution/:id",
@@ -44,7 +50,7 @@ router.put(
   "/updateinstitution/:id",
   checkId,
   authtenticate,
-  authorizeRole("admin", "manager", "users"),
+  authorizeRole("admin", "manager"),
 
   updateInstitute,
 );
@@ -54,11 +60,5 @@ router.delete(
   authtenticate,
   authorizeRole("admin"),
   deleteInstitute,
-);
-router.post(
-  "/institution/:id/reviews",
-  authtenticate,
-  authorizeRole("admin", "manager", "users"),
-  reviews,
 );
 module.exports = router;

@@ -14,9 +14,5 @@ router.get("/", (req, res) => {
 });
 router.post("/register", authorizeRole("admin"), registerLeaders);
 router.post("/login", loginLeaders);
-router.get(
-  "/getLeader/:id",
-  authorizeRole("admin", "manager", "user"),
-  getLeader,
-);
+router.get("/getLeader/:id", authorizeRole("admin"), getLeader);
 module.exports = router;

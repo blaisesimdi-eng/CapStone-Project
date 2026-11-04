@@ -7,7 +7,6 @@ const userRoute = require("./routes/users-routes.js");
 const app = express();
 const logger = require("./middleware/logger.js");
 const connectDb = require("./config/helper.js");
-const port = 2000;
 
 const institutions = [
   {
@@ -215,6 +214,6 @@ app.use((req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Express server is up and runnig on port ${port}`);
+app.listen(process.env.PORT, () => {
+  console.log("Express server is up and runnig");
 });
