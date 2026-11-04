@@ -10,7 +10,6 @@ function checkId(req, res, next) {
       data: null,
     });
   }
-  console.log("I got called");
   next();
 }
 
