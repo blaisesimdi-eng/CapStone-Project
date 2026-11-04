@@ -16,6 +16,7 @@ const locationSchema = new Schema(
   },
   {
     timestamps: true,
+    bufferCommands: false,
   },
 );
 

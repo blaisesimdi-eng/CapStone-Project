@@ -10,7 +10,7 @@ function authtenticate(req, res, next) {
   const token = authHeaders.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.id = decoded.id;
+    req.authorId = decoded.id;
     req.firstName = decoded.firstName;
     req.role = decoded.role;
     next();

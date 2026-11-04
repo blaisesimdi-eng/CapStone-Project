@@ -1,5 +1,7 @@
 const joi = require("joi");
 const mongoose = require("mongoose");
+const { Types } = require("mongoose");
+
 const locations = require("../models/location-models");
 const locationData = (payload) => {
   const schema = joi.object({
@@ -10,7 +12,7 @@ const locationData = (payload) => {
   const { error, value } = schema.validate(payload);
   return { error, value };
 };
-const location = async (req, res) => {
+const addLocation = async (req, res) => {
   const userId = req.authorId;
   const id = req.params.id;
   const { error, value } = locationData(req.body);
@@ -60,5 +62,28 @@ const getLocation = async (req, res) => {
     data: uni,
   });
 };
-console.log("This is your uni");
-module.exports = { location, getLocation };
+
+const getLocationById = async (req, res) => {
+  const id = req.params.id;
+  const location = await locations
+    .findOne({
+      _id: new Types.ObjectId(id),
+    })
+    .populate({
+      path: "instituteId",
+      select: "institutionName institutionType",
+    })
+    .lean();
+  if (!location) {
+    return res.status(404).json({
+      message: "Not a valid route, input correct locationId",
+      status: res.statusCode,
+      data: null,
+    });
+  }
+  return res.status(200).json({
+    status: res.statusCode,
+    data: location,
+  });
+};
+module.exports = { addLocation, getLocation, getLocationById };

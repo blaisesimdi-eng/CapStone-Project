@@ -12,11 +12,13 @@ const institute = require("../models/institution-models");
 const deleteInstitute = require("../controller/institutes/delete-institute");
 const authorizeRole = require("../middleware/role-acess");
 const reviews = require("../controller/review-institute");
+const paginate = require("../middleware/paginate");
 const router = express.Router();
 router.get(
   "/institution",
   authtenticate,
   authorizeRole("admin", "manager", "user"),
+  paginate,
   getInstitutes,
 );
 router.get(

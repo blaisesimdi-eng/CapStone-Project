@@ -95,44 +95,61 @@ const institutions = require("../models/institution-models");
 //   },
 // ];
 
+const paginationMeta = ({ page, limit, total }) => {
+  const totalPages = Math.ceil(total / limit);
+  return {
+    page,
+    limit,
+    totalItems: total,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPrevPage: page > 1,
+  };
+};
 const getInstitutes = async (req, res) => {
-  const { page, limit } = req.query;
+  const { skip, limit, page } = req.paginate;
   const { authorId, role } = req;
   const id = req.params.id;
-  const parsedPage = parseInt(page);
-  const parsedLimit = parseInt(limit);
-  const skip = (parsedPage - 1) * parsedLimit;
-  console.log(skip);
-  console.log(parsedLimit, parsedPage, role);
+
   let uni;
-  if (role) {
-    uni = await institutions
-      .find({})
+  const filter = role === "admin" ? {} : { authorId };
+  console.log(authorId, role);
+  if (req.query.institutionName) {
+    filter.institutionName = {
+      $regex: String(req.query.institutionName),
+      $options: "i",
+    };
+  }
+  //const uniName = String(req.institutionName).toLowerCase();
+
+  const [results, total] = await Promise.all([
+    institutions
+      .find(filter)
       .populate({
         path: "location",
         select: "state city lga address",
       })
       .populate("review")
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean()
-      .exec();
-  }
+      .exec(),
+    institutions.countDocuments(filter),
+  ]);
   console.log("This is your uni");
-
-  if (req.query.institutionName) {
-    const institutionName = String(req.query.institutionName);
-    const query = { $regex: institutionName, $options: "i" };
-
-    //const u\niName = String(req.institutionName).toLowerCase();
-    uni = await institutions.find({ institutionName: query }).populate({
-      path: "location",
-      select: "state city lga address",
+  if (!total) {
+    return res.status(404).json({
+      message: "Not a valid Id, you are not authorized to acess this route!",
+      status: res.statusCode,
+      data: null,
     });
   }
 
   return res.status(200).json({
     status: res.statusCode,
-    data: uni,
+    meta: paginationMeta({ page, limit, total }),
+    data: results,
   });
 };
 
@@ -157,7 +174,7 @@ const getOneInstitute = async (req, res) => {
     .lean();
   //const validLeader = await institutions.findById(id);
   if (!institute) {
-    return res.status(403).json({
+    return res.status(404).json({
       message: "Not a valid Id, you are not authorized to acess this route",
       status: res.statusCode,
       data: null,
