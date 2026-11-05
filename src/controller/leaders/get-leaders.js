@@ -10,7 +10,6 @@ const getLeader = async (req, res) => {
     })
     .lean()
     .exec();
-  console.log("This is your leader");
   if (!uni) {
     return res.status(404).json({
       status: res.statusCode,

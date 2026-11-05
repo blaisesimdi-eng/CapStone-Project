@@ -146,7 +146,7 @@ const registerLeaders = async (req, res) => {
       data: null,
     });
   }
-  const hashedPassword = await bcrypt.hash(value.passWord, 12);
+  const hashedPassword = await bcrypt.hash(value.passWord, 10);
   const newleader = await leaders.create({
     ...value,
     passWord: hashedPassword,
@@ -199,7 +199,6 @@ const loginLeaders = async (req, res) => {
       role: validUser.role,
     },
     process.env.JWT_SECRET,
-    // { expiresIn: "1h" },
     { expiresIn: process.env.JWT_EXPIRES_IN },
   );
   if (role.toLowerCase().trim() !== validUser.role.toLowerCase().trim()) {

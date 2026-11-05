@@ -5,6 +5,7 @@ const {
 } = require("../controller/leaders/register-leaders");
 const getLeader = require("../controller/leaders/get-leaders");
 const authorizeRole = require("../middleware/role-acess");
+const authtenticate = require("../middleware/authtenticate");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -12,7 +13,12 @@ router.get("/", (req, res) => {
     message: "Welcome to leaders route",
   });
 });
-router.post("/register", authorizeRole("admin"), registerLeaders);
-router.post("/login", loginLeaders);
-router.get("/getLeader/:id", authorizeRole("admin"), getLeader);
+router.post(
+  "/register",
+  authtenticate,
+  authorizeRole(["admin"]),
+  registerLeaders,
+);
+router.post("/login", authtenticate, loginLeaders);
+router.get("/getLeader/:id", authtenticate, authorizeRole("admin"), getLeader);
 module.exports = router;

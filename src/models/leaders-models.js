@@ -14,7 +14,7 @@ const LeadersSchema = new Schema(
     role: {
       type: String,
       enum: ["manager", "admin", "user"],
-      default: "owner",
+      default: "user",
     },
   },
   {

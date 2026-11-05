@@ -17,7 +17,6 @@ const addLocation = async (req, res) => {
   const id = req.params.id;
   const { error, value } = locationData(req.body);
   if (error) {
-    console.log(error);
     return res.status(404).json({
       status: res.statusCode,
       error: error.details[0].message,

@@ -113,14 +113,12 @@ const getInstitutes = async (req, res) => {
 
   let uni;
   const filter = role === "admin" ? {} : { authorId };
-  console.log(authorId, role);
   if (req.query.institutionName) {
     filter.institutionName = {
       $regex: String(req.query.institutionName),
       $options: "i",
     };
   }
-  //const uniName = String(req.institutionName).toLowerCase();
 
   const [results, total] = await Promise.all([
     institutions
@@ -227,7 +225,7 @@ const updateInstitute = async (req, res) => {
   return res.status(200).json({
     status: res.statusCode,
     message: "Institution update sucessful",
-    data: institute,
+    data: uni,
   });
 };
 
