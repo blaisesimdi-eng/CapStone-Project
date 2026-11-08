@@ -19,6 +19,6 @@ router.post(
   authorizeRole(["admin"]),
   registerLeaders,
 );
-router.post("/login", authtenticate, loginLeaders);
+router.post("/login", loginLeaders);
 router.get("/getLeader/:id", authtenticate, authorizeRole("admin"), getLeader);
 module.exports = router;

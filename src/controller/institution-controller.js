@@ -112,12 +112,18 @@ const getInstitutes = async (req, res) => {
   const id = req.params.id;
 
   let uni;
-  const filter = role === "admin" ? {} : { authorId };
-  if (req.query.institutionName) {
-    filter.institutionName = {
-      $regex: String(req.query.institutionName),
+  let filter = role === "admin" ? {} : { authorId };
+
+  if (req.query.search) {
+    const search = {
+      $regex: String(req.query.search),
       $options: "i",
     };
+    filter.$or = [
+      { institutionName: search },
+      { institutionType: search },
+      { owner: search },
+    ];
   }
 
   const [results, total] = await Promise.all([
@@ -136,9 +142,9 @@ const getInstitutes = async (req, res) => {
     institutions.countDocuments(filter),
   ]);
   console.log("This is your uni");
-  if (!total) {
+  if (!total || results.length === 0) {
     return res.status(404).json({
-      message: "Not a valid Id, you are not authorized to acess this route!",
+      message: "No institution found matching your search!",
       status: res.statusCode,
       data: null,
     });
