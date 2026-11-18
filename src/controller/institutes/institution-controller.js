@@ -142,7 +142,7 @@ const replaceInstitute = async (req, res) => {
   const id = req.params.id;
   const { owner, programs, contactEmail, contactPhone } = req.body;
   console.log("Replaced done sucessfully");
-  const uni = await institutions.findByIdAndUpdate(id, req.body, {
+  const uni = await institutions.findByIdAndReplace(id, req.body, {
     runValidators: true,
     returnDocument: "after",
   });

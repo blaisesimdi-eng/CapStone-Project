@@ -13,7 +13,6 @@ const userData = (payload) => {
     lastName: joi.string().required(),
     contactEmail: joi.string().required(),
     passWord: joi.string().required(),
-    role: joi.string().required(),
   });
 
   const { error, value } = schema.validate(payload);
@@ -22,9 +21,7 @@ const userData = (payload) => {
 
 const loginUserData = (payload) => {
   const schema = joi.object({
-    firstName: joi.string().required(),
-    lastName: joi.string().required(),
-    passWord: joi.string().required(),
+    contactEmail: joi.string().required(),
     role: joi.string().required(),
   });
   const { error, value } = schema.validate(payload);
@@ -60,7 +57,7 @@ const registerUser = async (req, res) => {
   return res.status(201).json({
     message: "User registered succesfully",
     data: {
-      id: newleader._id,
+      id: newUser._id,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       role: newUser.role,
@@ -79,10 +76,10 @@ const loginUser = async (req, res) => {
   }
   const { firstName, lastName, passWord, contactEmail } = value;
   const validUser = await user.findOne({
-    email: value.contactEmail,
+    contactEmail: value.contactEmail,
   });
   if (!validUser) {
-    return res.status(400).json({
+    return res.status(401).json({
       status: res.statusCode,
       message: "Input valid user credentials",
       data: null,
@@ -90,7 +87,7 @@ const loginUser = async (req, res) => {
   }
   const isValidPassword = await bcrypt.compare(passWord, validUser.passWord);
   if (!isValidPassword) {
-    return res.status(400).json({
+    return res.status(401).json({
       status: res.statusCode,
       message: "Input valid user credentials",
       data: null,
@@ -102,6 +99,7 @@ const loginUser = async (req, res) => {
       id: validUser.id,
       firstName: validUser.firstName,
       lastName: validUser.lastName,
+      role: validUser.role,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN },
@@ -119,6 +117,7 @@ const loginUser = async (req, res) => {
       id: validUser._id,
       firstName: validUser.firstName,
       lastName: validUser.lastName,
+      role: validUser.role,
       token,
     },
   });

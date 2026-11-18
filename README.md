@@ -1,4 +1,4 @@
-# My Express App
+# Institution Management
 
 A Restful backend API built with **Node.js**, **Express** and **MongoDB** for managing institutions, organizational leaders, user locations and institution reviews.
 
