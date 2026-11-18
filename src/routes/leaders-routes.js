@@ -13,12 +13,12 @@ router.get("/", (req, res) => {
     message: "Welcome to leaders route",
   });
 });
+router.post("/register", registerLeaders);
 router.post(
-  "/register",
+  "/login",
   authtenticate,
-  authorizeRole(["admin"]),
-  registerLeaders,
+  authorizeRole("admin", "manager", "user"),
+  loginLeaders,
 );
-router.post("/login", loginLeaders);
 router.get("/getLeader/:id", authtenticate, authorizeRole("admin"), getLeader);
 module.exports = router;

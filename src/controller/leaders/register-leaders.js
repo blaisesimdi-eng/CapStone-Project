@@ -101,14 +101,9 @@ const leaders = require("../../models/leaders-models");
 // ];
 const leadersData = (payload) => {
   const schema = joi.object({
-    owner: joi.string(),
-    firstName: joi.string().required(),
-    lastName: joi.string().required(),
-    contactPhone: joi.string().required().max(11),
-    contactEmail: joi.string(),
-    role: joi.string(),
-    IsActive: joi.boolean(),
-    passWord: joi.string(),
+    headName: joi.string().required(),
+    headTitle: joi.string().required(),
+    passWord: joi.string().required,
   });
 
   const { error, value } = schema.validate(payload);
@@ -117,11 +112,10 @@ const leadersData = (payload) => {
 
 const loginLeadersData = (payload) => {
   const schema = joi.object({
-    contactEmail: joi.string().required(),
+    headName: joi.string().required(),
+    headTitle: joi.string().required(),
     passWord: joi.string().required(),
-    role: joi.string().required(),
   });
-
   const { error, value } = schema.validate(payload);
   return { error, value };
 };
@@ -136,13 +130,13 @@ const registerLeaders = async (req, res) => {
       data: null,
     });
   }
-  const contactEmailExists = await leaders.findOne({
-    contactEmail: value.contactEmail,
+  const headTitleExists = await leaders.findOne({
+    headName: value.headName,
   });
-  if (contactEmailExists) {
+  if (headTitleExists) {
     return res.status(409).json({
       status: res.statusCode,
-      message: "ContactEmail already used by another user",
+      message: "headTitle already exist",
       data: null,
     });
   }
@@ -152,13 +146,12 @@ const registerLeaders = async (req, res) => {
     passWord: hashedPassword,
   });
 
-  return res.status(200).json({
+  return res.status(201).json({
     message: "Leader registered succesfully",
     data: {
       id: newleader._id,
-      name: newleader.firstName,
-      email: newleader.contactEmail,
-      role: newleader.role,
+      headName: newleader.headName,
+      headTitle: newleader.headTitle,
     },
   });
 };
@@ -172,9 +165,9 @@ const loginLeaders = async (req, res) => {
       data: null,
     });
   }
-  const { contactEmail, passWord, role } = value;
+  const { headName, headTitle, passWord } = value;
   const validUser = await leaders.findOne({
-    contactEmail: value.contactEmail,
+    headTitle: value.headTitle,
   });
   if (!validUser) {
     return res.status(400).json({
@@ -183,8 +176,8 @@ const loginLeaders = async (req, res) => {
       data: null,
     });
   }
-  const isValidPasssword = await bcrypt.compare(passWord, validUser.passWord);
-  if (!isValidPasssword) {
+  const isValidPassword = await bcrypt.compare(passWord, validUser.passWord);
+  if (!isValidPassword) {
     return res.status(400).json({
       status: res.statusCode,
       message: "Input valid user credentials",
@@ -195,26 +188,23 @@ const loginLeaders = async (req, res) => {
   const token = jwt.sign(
     {
       id: validUser.id,
-      firstName: validUser.firstName,
-      role: validUser.role,
+      headName: validUser.headName,
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN },
   );
-  if (role.toLowerCase().trim() !== validUser.role.toLowerCase().trim()) {
-    return res.status(403).json({
-      status: res.statusCode,
-      message: "Input correct credentials",
-      data: null,
-    });
-  }
+  // if (role.toLowerCase().trim() !== validUser.role.toLowerCase().trim()) {
+  //   return res.status(403).json({
+  //     status: res.statusCode,
+  //     message: "Input correct credentials",
+  //     data: null,
+  //   });
+  // }
   return res.status(200).json({
     message: "Leader logged in succesfully",
     data: {
       id: validUser._id,
-      name: validUser.firstName,
-      email: validUser.contactEmail,
-      role: validUser.role,
+      name: validUser.headName,
       token,
     },
   });

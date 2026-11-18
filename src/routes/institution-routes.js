@@ -4,7 +4,7 @@ const {
   getOneInstitute,
   updateInstitute,
   replaceInstitute,
-} = require("../controller/institution-controller");
+} = require("../controller/institutes/institution-controller");
 const addInstitute = require("../controller/institutes/add-institute");
 const authtenticate = require("../middleware/authtenticate");
 const checkId = require("../middleware/validate.param");
@@ -14,13 +14,7 @@ const authorizeRole = require("../middleware/role-acess");
 const reviews = require("../controller/review-institute");
 const paginate = require("../middleware/paginate");
 const router = express.Router();
-router.get(
-  "/institution",
-  authtenticate,
-  authorizeRole("admin", "manager", "user"),
-  paginate,
-  getInstitutes,
-);
+router.get("/institution", authtenticate, paginate, getInstitutes);
 router.get(
   "/institution/:id",
   checkId,
@@ -57,7 +51,7 @@ router.put(
   updateInstitute,
 );
 router.delete(
-  "/deleteinstitute",
+  "/deleteinstitute/:id",
   checkId,
   authtenticate,
   authorizeRole("admin"),

@@ -101,10 +101,9 @@ const instituteData = (payload) => {
     institutionName: joi.string().required(),
     institutionType: joi.string().required(),
     programs: joi.array().items(joi.string().required()),
-    website: joi.string(),
     contactPhone: joi.string().required().max(11),
     contactEmail: joi.string(),
-    yearEstablished: joi.string(),
+    yearEstabilished: joi.string(),
     state: joi.string(),
     location: joi
       .object({

@@ -1,5 +1,3 @@
-const { string, required } = require("joi");
-
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const reviewSchema = new Schema(

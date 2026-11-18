@@ -10,7 +10,7 @@ const checkId = require("../middleware/validate.param");
 
 const router = express.Router();
 router.post(
-  "/addlocation",
+  "/addlocation/:id",
   checkId,
   authtenticate,
   authorizeRole("admin"),

@@ -1,5 +1,5 @@
 {
-  "name": "http-server",
+  "name": "institution-management",
   "version": "1.0.0",
   "description": "\"This is a simple server created with vanilla node.js\"",
   "license": "ISC",
